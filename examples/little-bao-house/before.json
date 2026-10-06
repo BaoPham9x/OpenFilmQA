@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "title": "Little Bao House: shot s44 room continuity (before)",
+  "brief": "Oreo enters the established kitchen and joins the same round family table for dinner.",
+  "reference": "adjacent-room.jpg",
+  "shots": [
+    {
+      "id": "s44",
+      "start_seconds": 107.597332,
+      "end_seconds": 110.097332,
+      "expected": {
+        "environment": "Same kitchen/table-evening as preceding shot: round family table, toast plate in centre, established window and hearth layout."
+      },
+      "observed": {
+        "environment": "Different darker room: patterned red pot, different table props and window/hearth layout."
+      },
+      "evidence": [
+        {
+          "file": "before.jpg",
+          "time_seconds": 107.597332,
+          "sha256": "50e762f6d6f3e2b4b0373418b9ca85c7cd31983a328d9149d9c953de09c9f4d2",
+          "source_kind": "source still for this shot; timestamp is placement in corrected final cut"
+        }
+      ],
+      "adjudications": {
+        "environment": {
+          "status": "confirmed",
+          "severity": "major",
+          "reviewer": "Bao Studio production operator; independently checked source stills for this case study",
+          "reason": "The room and table props differ from the approved preceding kitchen. The original two automated judges missed this fault.",
+          "repair": "Place Oreo into the preceding kitchen composition, preserve the table and props, then regenerate motion and recheck the neighbouring cuts."
+        }
+      }
+    }
+  ],
+  "film_review": {
+    "watched_full": false,
+    "listened_full": false
+  },
+  "source_note": "Historical production case, not a new model benchmark. Only the environment check is covered here."
+}

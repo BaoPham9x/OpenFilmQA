@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "title": "Little Bao House: shot s44 room continuity (after)",
+  "brief": "Oreo enters the established kitchen and joins the same round family table for dinner.",
+  "reference": "adjacent-room.jpg",
+  "shots": [
+    {
+      "id": "s44",
+      "start_seconds": 107.597332,
+      "end_seconds": 110.097332,
+      "expected": {
+        "environment": "Same kitchen/table-evening as preceding shot: round family table, toast plate in centre, established window and hearth layout."
+      },
+      "observed": {
+        "environment": "Same kitchen/table-evening as preceding shot: round family table, toast plate in centre, established window and hearth layout."
+      },
+      "evidence": [
+        {
+          "file": "after.jpg",
+          "time_seconds": 107.597332,
+          "sha256": "996d7032ed51e96ac4c72806c420eda50fa9dadf4ddc912d73c59725e91a1e9d",
+          "source_kind": "source still for this shot; timestamp is placement in corrected final cut"
+        }
+      ]
+    }
+  ],
+  "film_review": {
+    "watched_full": false,
+    "listened_full": false
+  },
+  "source_note": "Historical production case, not a new model benchmark. Only the environment check is covered here."
+}
