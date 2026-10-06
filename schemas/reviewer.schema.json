@@ -1,0 +1,997 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "enum": [
+        1
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "still",
+        "shot",
+        "scene",
+        "film"
+      ]
+    },
+    "profile": {
+      "type": "string",
+      "enum": [
+        "director"
+      ]
+    },
+    "movie_sha256": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "shots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "wardrobe": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "props": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "environment": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "action": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "scale": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "artifacts": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "narrative_clarity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "action_completion": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "shot_join": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "sound_intent": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "identity",
+              "wardrobe",
+              "props",
+              "environment",
+              "action",
+              "scale",
+              "artifacts",
+              "narrative_clarity",
+              "action_completion",
+              "shot_join",
+              "sound_intent"
+            ]
+          },
+          "observed": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "identity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "wardrobe": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "props": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "environment": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "action": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "scale": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "artifacts": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "narrative_clarity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "action_completion": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "shot_join": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "sound_intent": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "identity",
+              "wardrobe",
+              "props",
+              "environment",
+              "action",
+              "scale",
+              "artifacts",
+              "narrative_clarity",
+              "action_completion",
+              "shot_join",
+              "sound_intent"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "time_seconds": {
+                  "type": "number"
+                },
+                "sha256": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file",
+                "time_seconds",
+                "sha256"
+              ]
+            }
+          },
+          "adjudications": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "identity": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "wardrobe": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "props": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "environment": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "action": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "scale": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "artifacts": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "narrative_clarity": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "action_completion": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "shot_join": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "sound_intent": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending"
+                        ]
+                      },
+                      "reviewer": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "minor",
+                          "major",
+                          "blocker"
+                        ]
+                      },
+                      "repair": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reviewer",
+                      "reason",
+                      "severity",
+                      "repair"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "identity",
+              "wardrobe",
+              "props",
+              "environment",
+              "action",
+              "scale",
+              "artifacts",
+              "narrative_clarity",
+              "action_completion",
+              "shot_join",
+              "sound_intent"
+            ]
+          },
+          "playback": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source_sha256": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reviewer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "watched_full": {
+                "type": "boolean"
+              },
+              "listened_full": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "source_sha256",
+              "reviewer",
+              "watched_full",
+              "listened_full"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "expected",
+          "observed",
+          "evidence",
+          "adjudications",
+          "playback"
+        ]
+      }
+    },
+    "film_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "movie_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "watched_full": {
+          "type": "boolean"
+        },
+        "listened_full": {
+          "type": "boolean"
+        },
+        "story": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "pass",
+            "revision",
+            null
+          ]
+        },
+        "pacing": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "pass",
+            "revision",
+            null
+          ]
+        },
+        "performance": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "pass",
+            "revision",
+            null
+          ]
+        },
+        "picture": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "pass",
+            "revision",
+            null
+          ]
+        },
+        "sound": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "pass",
+            "revision",
+            null
+          ]
+        }
+      },
+      "required": [
+        "movie_sha256",
+        "reviewer",
+        "watched_full",
+        "listened_full",
+        "story",
+        "pacing",
+        "performance",
+        "picture",
+        "sound"
+      ]
+    },
+    "technical_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "movie_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "decode_complete": {
+          "type": "boolean"
+        },
+        "export_matches_spec": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "movie_sha256",
+        "reviewer",
+        "decode_complete",
+        "export_matches_spec"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "scope",
+    "profile",
+    "movie_sha256",
+    "title",
+    "shots",
+    "film_review",
+    "technical_review"
+  ]
+}

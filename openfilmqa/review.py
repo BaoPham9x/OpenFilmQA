@@ -11,6 +11,8 @@ import re
 from urllib.parse import quote
 
 CATEGORIES = ("identity", "wardrobe", "props", "environment", "action", "scale", "artifacts")
+DIRECTOR_CHECKS = ("narrative_clarity", "action_completion", "shot_join", "sound_intent")
+TEMPORAL_CHECKS = ("action", "action_completion", "shot_join", "sound_intent")
 SEVERITIES = ("minor", "major", "blocker")
 
 
@@ -78,6 +80,15 @@ def review(data, base="."):
     ids = [s.get("id") for s in shots if isinstance(s, dict)]
     if len(ids) != len(shots) or not all(isinstance(i, str) and i for i in ids) or len(set(ids)) != len(ids):
         raise ValueError("Every shot needs a unique non-empty id")
+    scope = data.get("scope", "film")
+    if scope not in ("still", "shot", "scene", "film"):
+        raise ValueError("scope must be still, shot, scene, or film")
+    profile = data.get("profile", "visual")
+    if profile not in ("visual", "director"):
+        raise ValueError("profile must be visual or director")
+    checks = CATEGORIES + (DIRECTOR_CHECKS if profile == "director" else ())
+    movie_hash = data.get("movie_sha256")
+    valid_movie_hash = isinstance(movie_hash, str) and re.fullmatch(r"[0-9a-f]{64}", movie_hash) is not None
     findings, coverage = [], []
     for shot in shots:
         expected, observed = object_field(shot, "expected"), object_field(shot, "observed")
@@ -88,8 +99,17 @@ def review(data, base="."):
         if not isinstance(evidence, list):
             raise ValueError("evidence must be a list")
         valid_evidence = bool(evidence) and all(evidence_ok(e, base) for e in evidence)
-        for category in CATEGORIES:
-            covered = meaningful(expected.get(category)) and meaningful(observed.get(category)) and valid_evidence
+        playback = object_field(shot, "playback")
+        continuous = bool(scope != "still" and valid_movie_hash and playback.get("source_sha256") == movie_hash
+                          and meaningful(playback.get("reviewer")) and playback.get("watched_full") is True)
+        for category in checks:
+            if scope == "still" and (category in TEMPORAL_CHECKS or category in DIRECTOR_CHECKS):
+                coverage.append({"shot": shot["id"], "check": category, "status": "out of scope"})
+                continue
+            media_covered = continuous if category in TEMPORAL_CHECKS else True
+            if category == "sound_intent":
+                media_covered = continuous and playback.get("listened_full") is True
+            covered = meaningful(expected.get(category)) and meaningful(observed.get(category)) and valid_evidence and media_covered
             coverage.append({"shot": shot["id"], "check": category, "status": "reviewed" if covered else "unreviewed"})
             if not covered or expected[category] == observed[category]:
                 continue
@@ -108,29 +128,28 @@ def review(data, base="."):
                              "reviewer": adjudication.get("reviewer"), "reason": adjudication.get("reason"),
                              "repair": adjudication.get("repair", "Compare the cited frame with the approved scene specification; repair only if the mismatch is confirmed.")})
     experience = ("story", "pacing", "performance", "picture", "sound")
-    movie_hash = data.get("movie_sha256")
-    valid_movie_hash = isinstance(movie_hash, str) and re.fullmatch(r"[0-9a-f]{64}", movie_hash) is not None
     # Full-film approval is an explicit reviewer attestation tied to an exact export.
     attested = bool(valid_movie_hash and film.get("movie_sha256") == movie_hash and film.get("reviewer")
                     and film.get("watched_full") is True and film.get("listened_full") is True)
     complete = attested and all(film.get(c) in ("pass", "revision") for c in experience)
-    coverage.append({"shot": "whole film", "check": "film_experience", "status": "reviewed" if complete else "unreviewed"})
+    if scope == "film":
+        coverage.append({"shot": "whole film", "check": "film_experience", "status": "reviewed" if complete else "unreviewed"})
     confirmed = any(f["status"] == "confirmed" for f in findings)
     pending = any(f["status"] == "pending" for f in findings)
     gaps = any(c["status"] == "unreviewed" for c in coverage)
-    creative = "revision" if confirmed or (complete and any(film[c] == "revision" for c in experience)) else "unreviewed" if pending or gaps else "pass"
+    creative = "revision" if confirmed or (scope == "film" and complete and any(film[c] == "revision" for c in experience)) else "unreviewed" if pending or gaps else "pass"
     technical_pass = bool(valid_movie_hash and technical.get("movie_sha256") == movie_hash and technical.get("decode_complete") is True
                           and technical.get("export_matches_spec") is True and technical.get("reviewer"))
     return {"schema_version": 1, "title": data.get("title", "Untitled review"), "movie_sha256": movie_hash,
-            "checks": list(CATEGORIES) + ["film_experience"], "coverage": coverage, "findings": findings,
+            "scope": scope, "profile": profile, "checks": list(checks) + (["film_experience"] if scope == "film" else []), "coverage": coverage, "findings": findings,
             "creative": creative, "technical": "pass" if technical_pass else "unreviewed",
-            "release": "ready for owner decision" if creative == "pass" and technical_pass else "blocked or incomplete review",
+            "release": "ready for owner decision" if scope == "film" and creative == "pass" and technical_pass else "blocked or incomplete review",
             "notes": ["Observation-based rules; no built-in vision model.", "Matching observations are reviewer evidence, not automatic pixel recognition.",
-                      "Full-film watch/listen and technical verdicts are explicit attestations, not inferred from thumbnails."]}
+                      "Playback, full-film watch/listen and technical verdicts are explicit attestations, not inferred from thumbnails.", "A scoped pass does not approve a whole film. Attestations must identify the exact source hash."]}
 
 
 def markdown(report, source_dir=None, output_dir=None):
-    lines = [f"# {report['title']}", "", f"Creative: **{report['creative']}**", f"Technical: **{report['technical']}**",
+    lines = [f"# {report['title']}", "", f"Scope: **{report.get('scope', 'film')}**", "", f"Creative: **{report['creative']}**", f"Technical: **{report['technical']}**",
              f"Release: **{report['release']}**", "", "## Findings", ""]
     if not report["findings"]:
         lines.append("No mismatches in the supplied covered observations. Consult coverage before calling the film clean.")

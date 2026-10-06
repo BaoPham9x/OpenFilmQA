@@ -1,0 +1,31 @@
+{
+  "name": "openfilmqa",
+  "version": "0.2.0",
+  "description": "An installable film QA skill with evidence, open reviewer adapters and calibration tools",
+  "license": "MIT",
+  "author": "Bao Ngoc Pham",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BaoPham9x/OpenFilmQA.git"
+  },
+  "bin": {
+    "openfilmqa": "bin/openfilmqa.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin/*.js",
+    "bin/*.py",
+    "openfilmqa/*.py",
+    "SKILL.md",
+    "docs/*.md",
+    "adapters/*.json",
+    "README.md",
+    "LICENSE",
+    "schemas/*.json"
+  ],
+  "scripts": {
+    "test": "node --test tests/install.test.cjs"
+  }
+}

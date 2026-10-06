@@ -7,6 +7,10 @@ import shutil
 import subprocess
 import sys
 from .review import digest, markdown, review
+from .evaluation import evaluate
+from .repair import compare
+from .adapters import judge
+from .delivery import verify
 
 
 def run(args):
@@ -14,7 +18,7 @@ def run(args):
     return result.stdout
 
 
-def prepare(movie, out, timestamps, reference=None, storyboard=None):
+def prepare(movie, out, timestamps, reference=None, storyboard=None, plan=None):
     movie, out = Path(movie).resolve(), Path(out)
     for binary in ("ffprobe", "ffmpeg"):
         if not shutil.which(binary):
@@ -34,13 +38,13 @@ def prepare(movie, out, timestamps, reference=None, storyboard=None):
         run(["ffmpeg", "-v", "error", "-ss", str(second), "-i", str(movie), "-frames:v", "1", "-vf", "scale=960:-2", "-update", "1", str(out / name)])
         frames.append({"file": name, "time_seconds": second, "sha256": digest(out / name)})
     assets = {}
-    for key, source in (("reference", reference), ("storyboard", storyboard)):
+    for key, source in (("reference", reference), ("storyboard", storyboard), ("plan", plan)):
         if source:
             source = Path(source)
             name = key + source.suffix
             shutil.copyfile(source, out / name)
             assets[key] = {"file": name, "sha256": digest(out / name)}
-    packet = {"schema_version": 1, "movie_filename": movie.name, "movie_sha256": digest(movie), "duration_seconds": duration,
+    packet = {"schema_version": 1, "movie_filename": movie.name, "movie_source": str(movie), "movie_sha256": digest(movie), "duration_seconds": duration,
               "streams": [{k: s.get(k) for k in ("codec_type", "codec_name", "width", "height", "avg_frame_rate", "sample_rate")} for s in probe["streams"]],
               "frames": frames, **assets, "review_status": "unreviewed"}
     (out / "packet.json").write_text(json.dumps(packet, indent=2) + "\n")
@@ -67,10 +71,41 @@ def main():
     packet.add_argument("--out", required=True, type=Path)
     packet.add_argument("--reference", type=Path)
     packet.add_argument("--storyboard", type=Path)
+    packet.add_argument("--plan", type=Path, help="Approved director plan; kept as source material")
+    benchmark = sub.add_parser("evaluate", help="Measure reviewers against private owner-labelled held-out cases")
+    benchmark.add_argument("dataset", type=Path)
+    benchmark.add_argument("predictions", type=Path)
+    repair = sub.add_parser("compare", help="Verify repaired observations, new faults and adjacent-shot review")
+    repair.add_argument("before", type=Path)
+    repair.add_argument("after", type=Path)
+    external = sub.add_parser("judge", help="Prepare an open reviewer job; no model call without --run")
+    external.add_argument("packet", type=Path)
+    external.add_argument("--adapter", required=True, type=Path)
+    external.add_argument("--out", required=True, type=Path)
+    external.add_argument("--scope", choices=("still", "shot", "scene", "film"), default="still")
+    external.add_argument("--run", action="store_true", help="Explicitly execute your configured reviewer; account costs may apply")
+    delivery = sub.add_parser("verify", help="Fully decode a real export and compare explicit delivery settings")
+    delivery.add_argument("movie", type=Path)
+    delivery.add_argument("--width", type=int, required=True)
+    delivery.add_argument("--height", type=int, required=True)
+    delivery.add_argument("--fps", type=float, required=True)
+    delivery.add_argument("--audio", choices=("required", "silent", "optional"), default="required")
     args = parser.parse_args()
     try:
+        if args.command == "verify":
+            result = verify(args.movie, args.width, args.height, args.fps, args.audio)
+            print(json.dumps(result, indent=2)); return 0 if result['technical'] == 'pass' else 1
+        if args.command == "evaluate":
+            result = evaluate(json.loads(args.dataset.read_text()), json.loads(args.predictions.read_text()), args.dataset.resolve().parent)
+            print(json.dumps(result, indent=2)); return 0 if result['status'] == 'measured' else 2
+        if args.command == "compare":
+            result = compare(json.loads(args.before.read_text()), json.loads(args.after.read_text()), args.before.resolve().parent, args.after.resolve().parent)
+            print(json.dumps(result, indent=2)); return 0 if result['status'] == 'reviewed repair' else 1 if result['status'] == 'regression' else 2
+        if args.command == "judge":
+            result = judge(args.packet, args.adapter, args.out, args.scope, args.run)
+            print(json.dumps(result, indent=2)); return 1 if result['status'] == 'revision' else 0 if result['status'] == 'pass' else 2
         if args.command == "prepare":
-            result = prepare(args.movie, args.out, [float(t) for t in args.at.split(",")], args.reference, args.storyboard)
+            result = prepare(args.movie, args.out, [float(t) for t in args.at.split(",")], args.reference, args.storyboard, args.plan)
             print(json.dumps(result, indent=2))
             return 0
         data = json.loads(args.input.read_text())
@@ -81,7 +116,7 @@ def main():
             (args.out / "report.md").write_text(markdown(result, args.input.resolve().parent, args.out.resolve()))
         print(json.dumps(result, indent=2))
         return 1 if any(f["status"] == "confirmed" for f in result["findings"]) else 2 if result["creative"] == "unreviewed" else 1 if result["creative"] == "revision" else 0
-    except (ValueError, OSError, KeyError, TypeError, subprocess.CalledProcessError) as error:
+    except (ValueError, OSError, KeyError, TypeError, subprocess.SubprocessError, ZeroDivisionError) as error:
         print(f"OpenFilmQA: {error}", file=sys.stderr)
         return 3
 

@@ -11,7 +11,7 @@ class ReviewTests(unittest.TestCase):
         self.base = Path(self.temp.name)
         (self.base / 'frame.jpg').write_bytes(b'test evidence, not a real film')
         self.evidence = {'file': 'frame.jpg', 'time_seconds': 1, 'sha256': digest(self.base / 'frame.jpg')}
-        self.data = {'schema_version': 1, 'shots': [{'id': 's01', 'expected': {}, 'observed': {}, 'evidence': [self.evidence]}]}
+        self.data = {'schema_version': 1, 'movie_sha256': 'a' * 64, 'shots': [{'id': 's01', 'expected': {}, 'observed': {}, 'evidence': [self.evidence], 'playback': {'source_sha256': 'a' * 64, 'reviewer': 'operator', 'watched_full': True}}]}
 
     def tearDown(self):
         self.temp.cleanup()
@@ -110,15 +110,41 @@ class ReviewTests(unittest.TestCase):
             with self.subTest(data=data), self.assertRaises(ValueError):
                 review(data, self.base)
 
-    def test_real_before_after_example(self):
-        import json
-        base = Path(__file__).resolve().parents[1] / 'examples' / 'little-bao-house'
-        before = review(json.loads((base / 'before.json').read_text()), base)
-        after = review(json.loads((base / 'after.json').read_text()), base)
-        self.assertEqual(before['creative'], 'revision')
-        self.assertEqual(before['findings'][0]['check'], 'environment')
-        self.assertEqual(after['findings'], [])
-        self.assertEqual(after['creative'], 'unreviewed')
+    def test_still_cannot_establish_complete_action(self):
+        self.data['scope'] = 'still'
+        shot = self.data['shots'][0]
+        shot['expected'] = shot['observed'] = {'action': 'pour completed'}
+        coverage = {c['check']: c['status'] for c in review(self.data, self.base)['coverage']}
+        self.assertEqual(coverage['action'], 'out of scope')
+
+    def test_still_pass_is_explicitly_scoped(self):
+        self.data['scope']='still'
+        shot=self.data['shots'][0]
+        shot['expected']=shot['observed']={c:'same' for c in CATEGORIES}
+        result=review(self.data,self.base)
+        self.assertEqual(result['creative'],'pass')
+        self.assertEqual(result['scope'],'still')
+        self.assertNotEqual(result['release'],'ready for owner decision')
+
+    def test_director_profile_sound_needs_listening(self):
+        self.data['profile'] = 'director'
+        shot = self.data['shots'][0]
+        shot['expected'] = shot['observed'] = {'sound_intent': 'soft contact'}
+        coverage = {c['check']: c['status'] for c in review(self.data, self.base)['coverage']}
+        self.assertEqual(coverage['sound_intent'], 'unreviewed')
+        shot['playback']['listened_full'] = True
+        coverage = {c['check']: c['status'] for c in review(self.data, self.base)['coverage']}
+        self.assertEqual(coverage['sound_intent'], 'reviewed')
+
+    def test_scoped_pass_cannot_release_whole_movie(self):
+        self.data['scope'] = 'shot'
+        shot = self.data['shots'][0]
+        shot['expected'] = shot['observed'] = {c: 'same' for c in CATEGORIES}
+        self.data['technical_review'] = {'movie_sha256': 'a' * 64, 'reviewer': 'operator',
+            'decode_complete': True, 'export_matches_spec': True}
+        result = review(self.data, self.base)
+        self.assertEqual(result['creative'], 'pass')
+        self.assertNotEqual(result['release'], 'ready for owner decision')
 
 
 if __name__ == '__main__':

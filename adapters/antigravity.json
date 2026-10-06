@@ -1,0 +1,7 @@
+{
+  "name": "Antigravity CLI image reviewer",
+  "capabilities": {"images": true, "video": false, "audio": false},
+  "argv": ["agy", "-p", "{prompt}", "--output-format", "json", "--json-schema", "{schema}"],
+  "output": "envelope",
+  "timeout_seconds": 300
+}

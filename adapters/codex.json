@@ -1,0 +1,23 @@
+{
+  "name": "Codex CLI image reviewer",
+  "capabilities": {
+    "images": true,
+    "video": false,
+    "audio": false
+  },
+  "argv": [
+    "codex",
+    "exec",
+    "{images}",
+    "--sandbox",
+    "read-only",
+    "--skip-git-repo-check",
+    "--output-schema",
+    "{schema}",
+    "--output-last-message",
+    "{response}",
+    "-"
+  ],
+  "output": "file",
+  "timeout_seconds": 300
+}
